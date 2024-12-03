@@ -111,3 +111,61 @@ Copie a linha de comando informada e execute no terminal, execute também o coma
 ![D2 16](https://github.com/user-attachments/assets/7c569d07-9894-44a9-a876-190282b129cd)
 
 
+## Arquivo YAML
+
+Este arquivo serve para passar as configurações dos pods e também pode ser utilizado para a criação de um serviço, entre outras funcionalidades.
+
+Observe o exemplo abaixo de arquivo YAML, onde name, app e container name receberam o mesmo nome por ser uma boa prática para evitar se perder nas configurações:
+
+![D2 17](https://github.com/user-attachments/assets/dda6d396-12a1-4f43-a6b4-f949a1c6b2a6)
+
+![D2 18](https://github.com/user-attachments/assets/b934ab31-6a16-4295-aad0-7ee9cd40ab22)
+
+Após configurar o arquivo YAML basta subir ele utilizando o comando *minikube start* e verificar se subiu com o comando *minikube status*:
+
+![D2 19](https://github.com/user-attachments/assets/3e3c0432-4e61-4f76-879d-06652ff30c7a)
+
+
+## Implementando um pod
+
+No Kubernetes execute o comando abaixo para criar o pod:
+
+- kubectl.exe apply -f .\simple-pod.yml
+
+Com o comando *kubectl.exe get pods* podem ser verificados os pods criados. E o comando *kubectl.exe get pod -o wide* para obter informações adicionais.
+
+O comando *kubectl.exe delete pod app-html* é utilizado para excluir o pod de nome app-html criado. Porém o arquivo de configuração dele continua existindo, e pode ser utilizado para a criação de um novo pod.
+
+
+## Criando um arquivo YAML de Deployment
+
+Com o comando *kubectl.exe get nodes* podem ser verificados os nós existentes no cluster.
+
+O comando *kubectl.exe describe node minikube* é usado para verificar mais detalhes/características do nó, como a capacidade, a quantidade/capacidade de pods, etc.
+
+Para criar várias réplicas de um pod o arquivo YAML deve ser do tipo Deployment conforme abaixo:
+
+![D2 20](https://github.com/user-attachments/assets/baaae648-4b57-4bbd-8654-b2be10fd22db)
+
+Para subir o arquivo de deployment é utilizado o comando *kubectl.exe apply -f .\simple-deployment.yml* onde .\simple-deployment.yml é o nome do arquivo. E após executar o comando *kubeclt.exe get pods* para verificar os pods criados de acordo com a quantidade de réplicas informada no arquivo deployment.
+
+Obs. mesmo que um desses pods seja excluído ele será recriado automaticamente para manter sempre a quantidade de réplicas especificada.
+
+Para verificar mais informações do deployment use o comando *kubeclt.exe get deployment*. Par informações mais específicas do deployment use o comando *kubeclt.exe describe deployment nomedodeployment*.
+
+Use o comando *kubectl.exe scale deployment nomedodeployment --replicas=10* para aumentar a quantidade de pods do deployment.
+
+
+## Expondo um Deployment
+
+Ao expor um deployment será gerado um IP e cada consulta será realizada em todos os pods criados, mesmo que estejam em servidores diferentes.
+
+Para expor use o comando abaixo:
+- *kubectl.exe expose deployment nomedodeployment --type=LoadBalancer --name=nomedaaplicacao --port=80*
+
+Após executar o comando será criado um service com o mesmo nome da aplicação. Com o comando *kubectl.exe get service* pode ser vificado o serviço criado.
+
+Caso o serviço tenha sido criado na máquina local, utilize o comando *minikube service --url nomedoservico* para expor o endereço IP e a porta do serviço criado.
+
+
+
