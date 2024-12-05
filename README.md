@@ -168,4 +168,71 @@ Após executar o comando será criado um service com o mesmo nome da aplicação
 Caso o serviço tenha sido criado na máquina local, utilize o comando *minikube service --url nomedoservico* para expor o endereço IP e a porta do serviço criado.
 
 
+## Criando um NodePort
+
+Permite acessar um pod específico sem a necessidade de criar um LoadBalancer.
+
+Gere uma imagem em container Docker com Apache para a aplicação abaixo:
+
+![D2 21](https://github.com/user-attachments/assets/9f33f680-82d1-433f-a9a2-e56458842e21)
+
+Isso pode ser feito com o DockerFile abaixo:
+
+![D2 22](https://github.com/user-attachments/assets/9575e8b5-e482-4768-a2c8-dae908ba755f)
+
+E os arquivos para a criação dos pods:
+
+![D2 23](https://github.com/user-attachments/assets/c7fcbe70-391d-4b03-8197-a8b94b5f2b3c)
+
+![D2 24](https://github.com/user-attachments/assets/31ac8154-0206-4ef5-a3f4-16a60a3cd9be)
+
+Digite o comando abaixo para gerar a imagem:
+- docker build . -t nomedaimagem/myapp_php:1.0
+
+E o comando abaixo para subir a imagem para o hub do Docker (https://hub.docker.com/):
+- docker push nomedaimagem/myapp_php:1.0
+
+Após isso, conecte-se ao seu cluster criado na nuvem:
+
+![D2 25](https://github.com/user-attachments/assets/b8220933-7e23-40a6-86c6-603d722bc5c5)
+
+Execute os comandos para criar os pods:
+- kubectl.exe apply -f .\pod.yml
+
+Com o comando *gcloud compute instances list* podem ser verificados os IPs interno e externo dos containeres/nós na plataforma Google cloud. Essa informação também pode ser obtida com o comando *kubectl.exe get nodes -o wide*.
+
+O pod poderá ser acessado por meio de qualquer um dos IPs retornados.
+
+Utilize o comando abaixo par criar o serviço:
+- kubectl.exe apply -f .\nodePort.yml
+
+![D2 26](https://github.com/user-attachments/assets/aece9d58-0850-4f4d-8bc1-48249db1ab25)
+
+Utilize o comando abaixo para liberar o acesso ao aplicativo, sendo 32081 a porta para acesso ao aplicativo:
+- gcloud compute firewall-rules create my-app-php --allow tcp:32081
+
+Teste o acesso ao aplicativo:
+
+![D2 27](https://github.com/user-attachments/assets/22108f80-3ba0-449f-bb7f-51708c10a7fe)
+
+
+## Executando aplicações no Pod
+
+Com o comando *kubectl.exe exec --stdin --tty myapp-php -- /bin/bash* é possível executar o bash para fazer alterações dentro do container, passando o nome do pod e o que será executado.
+
+![D2 28](https://github.com/user-attachments/assets/9fee3c8a-adbf-4119-95b1-d6ebce451517)
+
+Para sair do container basta executar *Exit*.
+
+
+## Deployment e Service em um único arquivo YAML
+
+Para fazer o deployment e service com um único arquivo YAML, configure ele conforme abaixo:
+
+![D2 29](https://github.com/user-attachments/assets/a8efc3ab-2dd3-4eec-a2b0-ed96039418b0)
+
+Para criar o pod basta executar os mesmos comandos anteriores:
+
+![D2 30](https://github.com/user-attachments/assets/8bcd01bf-6906-4184-beb8-a4da46c60248)
+
 
