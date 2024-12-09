@@ -236,3 +236,81 @@ Para criar o pod basta executar os mesmos comandos anteriores:
 ![D2 30](https://github.com/user-attachments/assets/8bcd01bf-6906-4184-beb8-a4da46c60248)
 
 
+## Encaminhamento de porta
+
+Crie o pod abaixo, e rode ele:
+
+![D2 31](https://github.com/user-attachments/assets/70c8196d-fc64-4ab4-b297-176c80f33685)
+
+![D2 32](https://github.com/user-attachments/assets/326ec40d-ab96-47f0-a557-4e2f7cfa1e27)
+
+Porém note que a senha do banco de dados está sendo passada no pod, o que não é aconselhável.
+
+Note também que não será criado um serviço para este pod, nesse caso será realizado um encaminhamento de porta por meio do comando abaixo, passando a port utilizada e a porta do pod:
+- kubectl.exe port-forward pod/mysql-pod 3306:3306
+
+Lembre-se de liberar a porta no firewall.
+
+Abra algum software cliente SQL, como por exemplo o SQLPro, passando as informações de conexão com o banco de dados e inclusive o IP e a porta liberada para testar a conexão.
+
+![D2 33](https://github.com/user-attachments/assets/b2ebcbb0-899a-4a51-a67a-c5b2eaeab1de)
+
+
+## Conexão com o banco de dados
+
+Crie o seguinte DockerFile:
+
+![D2 34](https://github.com/user-attachments/assets/4f1a4f58-f824-435f-b561-5aa7883e9fdb)
+
+Crie a tabela abaixo no banco de dados:
+
+![D2 35](https://github.com/user-attachments/assets/1bcb64a2-bb1f-46a1-b1eb-65bab44ac7d1)
+
+Crie o deployment:
+
+![D2 36](https://github.com/user-attachments/assets/4de5146b-df13-45c2-895b-e0d061960779)
+
+![D2 37](https://github.com/user-attachments/assets/ccd0955c-79a3-497f-b022-05ad54560a9c)
+
+Onde a conexão com o banco será realizada no backend para evitar a exposição do banco.
+
+No diretório onde se encontra o dockerfile execute o comando abaixo para criar a imagem:
+- docker build . - t nomedousuariodorepositoriodockerondeseencontraaimagem/nomedaimagem:1.0
+
+Execute o comando abaixo para subir a imagem para o repositório:
+- docker push nomedousuariodorepositoriodockerondeseencontraaimagem/nomedaimagem:1.0
+
+Após executar os comandos acima pode ser conferida a criação da imagem no https://hub.docker.com/
+
+Suba o deployment e o serviço do banco de dados com o comando *kubectl.exe apply -f .\db-deployment.yml*.
+
+Observe abaixo a configuração do backend para conexão com o banco:
+
+![D2 38](https://github.com/user-attachments/assets/bac8b12d-d585-47e9-842d-9840ccce9305)
+
+E as configurações do frontend para obter os dados para popular o banco:
+
+![D2 39](https://github.com/user-attachments/assets/9885a87f-c4b4-40c2-93fa-a102cc6278d5)
+
+Observe o deployment para subir o backend:
+
+![D2 40](https://github.com/user-attachments/assets/3f304079-6741-466c-bec7-671dcd11285f)
+
+Dockerfile do backend:
+
+![D2 41](https://github.com/user-attachments/assets/7d22bcc6-4697-4e67-93e5-5c7a8e537f72)
+
+Execute os comandos docker build e docker push para criar e subir a imagem php. E o comando kubectl.exe apply para subir o deployment php.
+
+Para liberar a porta do serviço no firewall da nuvem execute o comando *gcloud compute firewall-rules create backend --allow tcp:30005* e o comando *gcloud compute firewall-rules list* para conferir a regra de nome backend criada.
+
+Atualize a porta informada no frontend com a porta gerada no cluster.
+
+Abra a aplicação informe alguns dados de teste e após execute o comando *kubeclt.exe exec --tty --stdin nomedopodquearmazenaobancodedados -- /bin/bash*, e faça a conexão com o banco usando o comando *mysql -u root -h 127.0.0.1(esse é o IP localhost) -p*, se o sistema operacional do cluster for Linux, para verificar se os dados foram persistidos.
+
+![D2 42](https://github.com/user-attachments/assets/980eed56-9c50-4547-b6f0-79bd0eb341f7)
+
+Obs.: se matar o pod ou o deployment os dados serão perdidos.
+
+Para sair do banco e do cluster basta executar o comando *exit*.
+
