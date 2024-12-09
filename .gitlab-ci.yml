@@ -42,3 +42,5 @@ deploy_dev:
     - chmod 400 $SSH_KEY
   script:
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY gcp@35.198.57.187 "sudo rm * -Rf sudo git clone --branch kubernetes https://gitlab.com/denilsonbonatti/gitlab-cicd-app-base.git && cd gitlab-cicd-app-base && kubectl -f deployment.yml"
+  only:
+    - kubernetes
