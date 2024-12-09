@@ -42,3 +42,5 @@ deploy_dev:
     - gcp
   script:
     - docker run -d --name nodeapp -p 3000:3000 denilsonbonatti/gitlab-cicd-node:1.0
+  only:
+    - final
